@@ -31,6 +31,5 @@ class CleantalkServiceProvider extends ServiceProvider
         $this->publishes([
             __DIR__.'/config/cleantalk.php' => config_path('cleantalk.php'),
         ]);
-        $this->loadViewsFrom(__DIR__.'/views/widgets/', 'cleantalk');
     }
 }
