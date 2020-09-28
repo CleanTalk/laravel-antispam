@@ -2,7 +2,7 @@
     "name": "cleantalk/laravel-antispam",
     "description": "Anti-spam laravel extension by CleanTalk with protection against spam bots and manual spam.",
     "keywords": [
-        "yii2",
+        "laravel",
         "cleantalk",
         "antispam"
     ],
