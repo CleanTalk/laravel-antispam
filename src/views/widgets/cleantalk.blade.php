@@ -1,32 +1,4 @@
-<html>
-    <head>
-        <script src="{{ asset('js/ct_js_test.js')}}"></script>
-    </head>
-</html>
-<?php
-
-namespace cleantalk\antispam\Widgets;
-
-
-class CleantalkWidget extends AbstractWidget
-{
-    /**
-     * The configuration array.
-     *
-     * @var array
-     */
-    protected $config = [];
-
-    /**
-     * Treat this method as a controller action.
-     * Return view() or other content to display.
-     */
-    public function run()
-    {
-        //
-
-        return view('widgets.cleantalk', [
-            'config' => $this->config,
-        ]);
-    }
-}
+<script>
+    const ctPublic = {"apbct_checkjs_val":"<?php echo md5(config('cleantalk.apikey')); ?>"}
+</script>
+<script src="{{ asset('vendor/cleantalk/ct_js_test.js')}}"></script>
