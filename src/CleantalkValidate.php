@@ -51,7 +51,7 @@ class CleantalkValidate
 
 			// Service pararams
 			$ct_request->auth_key             = config('cleantalk.apikey');
-			$ct_request->agent                = 'laravel-antispam-2.0';
+			$ct_request->agent                = 'laravel-antispam-2.0.1';
 
 			// Message params
 			$ct_request->sender_email         = $sender_email;
