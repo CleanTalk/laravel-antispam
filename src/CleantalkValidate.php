@@ -4,21 +4,34 @@ namespace cleantalk\antispam;
 use cleantalk\antispam\lib\Cleantalk\antispam\Cleantalk;
 use cleantalk\antispam\lib\Cleantalk\antispam\CleantalkRequest;
 
-class CleantalkValidate {
-
+class CleantalkValidate
+{
+    /**
+     * Обработка входящего запроса.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \Closure  $next
+     * @param  string  $role
+     * @return mixed
+     */
+    public function handle($request, \Closure $next)
+    {
+        self::apbct_spam_test($request->request);
+        return $next($request);
+    }
 	static public function apbct_spam_test($data){
-		
+
 		if (!config('cleantalk.enabled')) {
 			return;
 		}
 		$msg_data = self::apbct_get_fields_any($data);
-		
+
 		// Data
 		$sender_email    = isset($msg_data['email'])    ? $msg_data['email']    : '';
 		$sender_nickname = isset($msg_data['nickname']) ? $msg_data['nickname'] : '';
 		$subject         = isset($msg_data['subject'])  ? $msg_data['subject']  : '';
 		$message         = isset($msg_data['message'])  ? $msg_data['message']  : array();
-		
+
 		// Flags
 		$registration    = isset($msg_data['reg'])      ? $msg_data['reg']      : false;
 		$skip            = isset($msg_data['skip'])     ? $msg_data['skip']     : false;
@@ -30,21 +43,21 @@ class CleantalkValidate {
 			( $registration && ! $registrations_test )
 		)
 			$skip = true;
-		
+
 		// Do check if email is not set
 		if( ! $skip ){
-			
+
 			$ct_request = new CleantalkRequest();
-			
+
 			// Service pararams
 			$ct_request->auth_key             = config('cleantalk.apikey');
-			$ct_request->agent                = 'laravel-antispam-10';
-			                                  
-			// Message params                 
-			$ct_request->sender_email         = $sender_email; 
-			$ct_request->sender_nickname      = $sender_nickname; 
+			$ct_request->agent                = 'laravel-antispam-2.0';
+
+			// Message params
+			$ct_request->sender_email         = $sender_email;
+			$ct_request->sender_nickname      = $sender_nickname;
 			$ct_request->message              = json_encode($message);
-			
+
 			// IPs
 			$possible_ips = self::apbct_get_possible_ips();
 			$ct_request->sender_ip            = self::apbct_get_ip();
@@ -52,7 +65,7 @@ class CleantalkValidate {
 			if ($possible_ips) {
 				$ct_request->x_forwarded_for      = $possible_ips['X-Forwarded-For'];
 				$ct_request->x_forwarded_for_last = $possible_ips['X-Forwarded-For-Last'];
-				$ct_request->x_real_ip            = $possible_ips['X-Real-Ip'];				
+				$ct_request->x_real_ip            = $possible_ips['X-Real-Ip'];
 			}
 
 			// Misc params
@@ -61,19 +74,20 @@ class CleantalkValidate {
 			$ct_request->sender_info          = json_encode(self::apbct_get_sender_info($data));
 			$ct_request->all_headers          = function_exists('apache_request_headers') ? json_encode(apache_request_headers()) : json_encode(self::apbct_apache_request_headers());
 			$ct_request->post_info            = $registration ?  '' : json_encode(array('comment_type' => 'feedback'));
-			
+			$ct_request->event_token          = !  empty($data->get('ct_bot_detector_event_token'))    ? $data->get('ct_bot_detector_event_token') : '';
+
 			// Making a request
 			$ct = new Cleantalk();
-			$ct->server_url = 'http://moderate.cleantalk.org';
-			
+			$ct->server_url = 'https://moderate.cleantalk.org';
+
 			$ct_result = $registration
 				? $ct->isAllowUser($ct_request)
 				: $ct->isAllowMessage($ct_request);
-			
+
 			if(!empty($ct_result->errno) && !empty($ct_result->errstr)){
-				
+
 			}elseif($ct_result->allow == 1){
-				
+
 			}else{
 				self::apbct_die($ct_result->comment, $registration);
 			}
@@ -81,32 +95,32 @@ class CleantalkValidate {
 	}
 
 	/**
-	 * Inner function - Default data array for senders 
-	 * @return array 
+	 * Inner function - Default data array for senders
+	 * @return array
 	 */
 	static private function apbct_get_sender_info($data)
 	{
-						
+
 		return $sender_info = array(
-		
+
 			// Common
 			'remote_addr'     => $_SERVER['REMOTE_ADDR'],
 			'USER_AGENT'      => htmlspecialchars($_SERVER['HTTP_USER_AGENT']),
 			'REFFERRER'       => htmlspecialchars($_SERVER['HTTP_REFERER']),
 			'page_url'        => isset($_SERVER['SERVER_NAME'], $_SERVER['REQUEST_URI']) ? htmlspecialchars($_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI']) : null,
 			// 'cms_lang'        => substr(locale_get_default(), 0, 2),
-			
-			'php_session'     => session_id() != '' ? 1 : 0, 
+
+			'php_session'     => session_id() != '' ? 1 : 0,
 			'cookies_enabled' => self::apbct_cookies_test(),
 			'fields_number'   => sizeof($data),
 			'ct_options'      => json_encode(array('auth_key' => config('cleantalk.apikey'), 'response_lang' => 'en')),
-			
-			// PHP cookies                                                                                                                                                 
-			// 'cookies_enabled'        => $cookie_is_ok,                                                                                                                     
+
+			// PHP cookies
+			// 'cookies_enabled'        => $cookie_is_ok,
 			// 'REFFERRER_PREVIOUS'     => !empty($_COOKIE['apbct_prev_referer'])    && $cookie_is_ok     ? $_COOKIE['apbct_prev_referer']                                    : null,
 			// 'site_landing_ts'        => !empty($_COOKIE['apbct_site_landing_ts']) && $cookie_is_ok     ? $_COOKIE['apbct_site_landing_ts']                                 : null,
 			// 'page_hits'              => !empty($_COOKIE['apbct_page_hits'])                            ? $_COOKIE['apbct_page_hits']                                       : null,
-			
+
 			// JS params
 			'mouse_cursor_positions' => isset($_COOKIE['apbct_pointer_data'])          ? json_decode(stripslashes($_COOKIE['apbct_pointer_data']), true) : null,
 			'js_timezone'            => isset($_COOKIE['apbct_timezone'])              ? $_COOKIE['apbct_timezone']             : null,
@@ -121,7 +135,7 @@ class CleantalkValidate {
 	* @return string
 	*/
 	static function apbct_obfuscate_param($value = null)
-	{		
+	{
 		if ($value && (!is_object($value) || !is_array($value))) {
 			$length = strlen($value);
 			$value = str_repeat('*', $length);
@@ -143,20 +157,20 @@ class CleantalkValidate {
 			return null;
 		 }
 	 }
-	
+
 	/**
-	 * Cookies test for sender 
+	 * Cookies test for sender
 	 * Also checks for valid timestamp in $_COOKIE['apbct_timestamp']
 	 * @return null|0|1;
 	 */
 	static private function apbct_cookies_test()
 	{
-		if(isset($_COOKIE['apbct_cookies_test'], $_COOKIE['apbct_timestamp'])){			
+		if(isset($_COOKIE['apbct_cookies_test'], $_COOKIE['apbct_timestamp'])){
 			if($_COOKIE['apbct_cookies_test'] == md5(config('cleantalk.apikey').$_COOKIE['apbct_timestamp']))
 				return 1;
 			else
 				return 0;
-		}else			
+		}else
 			return null;
 	}
 	/**
@@ -184,17 +198,17 @@ class CleantalkValidate {
 		$ip = !$ip ? filter_var(trim($_SERVER['REMOTE_ADDR']), FILTER_VALIDATE_IP, FILTER_FLAG_IPV6 ) : $ip;
 		return $ip;
 	}
-	/* 
+	/*
 	 * Gets every HTTP_ headers from $_SERVER
-	 * 
+	 *
 	 * If Apache web server is missing then making
 	 * Patch for apache_request_headers()
-	 * 
+	 *
 	 * returns array
 	 */
 	static private function apbct_apache_request_headers(){
-		
-		$headers = array();	
+
+		$headers = array();
 		foreach($_SERVER as $key => $val){
 			if(preg_match('/\AHTTP_/', $key)){
 				$server_key = preg_replace('/\AHTTP_/', '', $key);
@@ -202,7 +216,7 @@ class CleantalkValidate {
 				if(count($key_parts) > 0 and strlen($server_key) > 2){
 					foreach($key_parts as $part_index => $part){
 						$key_parts[$part_index] = function_exists('mb_strtolower') ? mb_strtolower($part) : strtolower($part);
-						$key_parts[$part_index][0] = strtoupper($key_parts[$part_index][0]);					
+						$key_parts[$part_index][0] = strtoupper($key_parts[$part_index][0]);
 					}
 					$server_key = implode('-', $key_parts);
 				}
@@ -211,12 +225,12 @@ class CleantalkValidate {
 		}
 		return $headers;
 	}
-	/* 
+	/*
 	 * Gets possible IPs
 	 *
 	 * Checks for HTTP headers HTTP_X_FORWARDED_FOR and HTTP_X_REAL_IP and filters it for IPv6 or IPv4
 	 * returns array()
-	 */	
+	 */
 	static private function apbct_get_possible_ips()
 	{
 		$result_ips = array(
@@ -224,11 +238,11 @@ class CleantalkValidate {
 			'X-Forwarded-For-Last' => null,
 			'X-Real-Ip' => null,
 		);
-		
+
 		$headers = function_exists('apache_request_headers')
 			? apache_request_headers()
 			: self::apbct_apache_request_headers();
-		
+
 		// X-Forwarded-For
 		if(array_key_exists( 'X-Forwarded-For', $headers )){
 			$ips = explode(",", trim($headers['X-Forwarded-For']));
@@ -245,7 +259,7 @@ class CleantalkValidate {
 				$result_ips['X-Forwarded-For-Last'] = !$ip ? '' : $ip;
 			}
 		}
-		
+
 		// X-Real-Ip
 		if(array_key_exists( 'X-Real-Ip', $headers )){
 			$ip = trim($headers['X-Real-Ip']);
@@ -258,35 +272,35 @@ class CleantalkValidate {
 	/*
 	* Get data from an ARRAY recursively
 	* @return array
-	*/ 
+	*/
 	static private function apbct_get_fields_any($arr, $message=array(), $email = null, $nickname = array('nick' => '', 'first' => '', 'last' => ''), $subject = null, $skip = false, $reg = false, $not_reg=false, $prev_key = '')
 	{
         global $detected_cms;
 
 		// Skip request if fields exists
-		$skip_params = array( 
+		$skip_params = array(
 			'ipn_track_id', 	// PayPal IPN #
 			'txn_type', 		// PayPal transaction type
 			'payment_status', 	// PayPal payment status
-			'ccbill_ipn', 		// CCBill IPN 
+			'ccbill_ipn', 		// CCBill IPN
 		);
-		
+
 		$registration = array(
 			'registration',
 			'register',
 			'submitCreate', // PrestaShop
 		);
-		
+
 		// Fields to replace with ****
-		$obfuscate_params = array( 
+		$obfuscate_params = array(
 			'password',
 			'pass',
 			'pwd',
 			'pswd'
 		);
-		
+
 		// Array for strings in keys to skip and known service fields
-		$skip_fields_with_strings = array( 
+		$skip_fields_with_strings = array(
 			// Common
 			'ct_checkjs', //Do not send ct_checkjs
 			'nonce', //nonce for strings such as 'rsvp_nonce_name'
@@ -326,41 +340,41 @@ class CleantalkValidate {
 			'page',
 			'id',
 		);
-		
+
 		// Reset $message if we have a sign-up data
-		$skip_message_post = array( 
+		$skip_message_post = array(
 			'edd_action', // Easy Digital Downloads
 		);
-		
+
 		// Flag for skipping check
 		foreach($skip_params as $value){
 			if(array_key_exists($value,$_GET) || array_key_exists($value,$_POST))
 				$skip = true;
-		} unset($value);	
-		
+		} unset($value);
+
 		$reg = false;
 
 		if(count($arr)){
 			foreach($arr as $key => $value){
-				
+
 				if(is_string($value)){
 					$decoded_json_value = json_decode($value, true);
 					if($decoded_json_value !== null)
 						$value = $decoded_json_value;
 				}
-				
+
 				if(!is_array($value) && !is_object($value)){
-					
+
 					if($value === '')
 						continue;
-					
+
 					// Flag for detecting registrations
 					if(strlen($value) > 40 && $not_reg){
 						$reg = false;
 						$not_reg = true;
 					}else{
 						foreach($registration as $needle){
-							if(stripos($key, $needle) !== false || 
+							if(stripos($key, $needle) !== false ||
 								($key == 'page' && $value == 'register') //OsClass
 							){
 								$reg = true;
@@ -368,15 +382,15 @@ class CleantalkValidate {
 							}
 						} unset($needle);
 					}
-					
-					
+
+
 					// Skipping fields names with strings from (array)skip_fields_with_strings
 					foreach($skip_fields_with_strings as $needle){
 						if (preg_match("/".$needle."/", $prev_key.$key) == 1){
 							continue(2);
 						}
 					}unset($needle);
-					
+
 					// Obfuscating params
 					foreach($obfuscate_params as $needle){
 						if (strpos($key, $needle) !== false){
@@ -384,24 +398,24 @@ class CleantalkValidate {
 							continue(2);
 						}
 					}unset($needle);
-					
+
 					// Decodes URL-encoded data to string.
-					$value = urldecode($value);	
+					$value = urldecode($value);
 
 					// Email
 					if (!$email && preg_match("/^\S+@\S+\.\S+$/", $value)){
 						$email = $value;
-						
+
 					// Names
 					} elseif (
                         preg_match( "/name/i", $key ) ||
                         ( $detected_cms == 'Question2Answer' && preg_match( "/^handle$/i", $key ) )
                     ){
-						
+
 						preg_match("/(first.?name)?(name.?first)?(forename)?/", $key, $match_forename);
 						preg_match("/(last.?name)?(family.?name)?(second.?name)?(surname)?/", $key, $match_surname);
 						preg_match("/(nick.?name)?(user.?name)?(nick)?(login)?/", $key, $match_nickname);
-						
+
 						if(count($match_forename) > 1)
 							$nickname['first'] = $value;
 						elseif(count($match_surname) > 1)
@@ -410,40 +424,40 @@ class CleantalkValidate {
 							$nickname['nick'] = $value;
 						else
                             $nickname[$prev_key.$key] = $value;
-					
+
 					// Subject
 					}elseif ($subject === null && preg_match("/subject/i", $key)){
 						$subject = $value;
-					
+
 					// Message
 					}else{
-						$message[$prev_key.$key] = $value;					
+						$message[$prev_key.$key] = $value;
 					}
-					
+
 				}else if(!is_object($value)&&@get_class($value)!='WP_User'){
-					
+
 					$prev_key_original = $prev_key;
 					$prev_key = ($prev_key === '' ? $key.'_' : $prev_key.$key.'_');
-					
+
 					$temp = apbct_get_fields_any($value, $message, $email, $nickname, $subject, $skip, $reg, $not_reg, $prev_key);
-					
+
 					$message 	= ($temp['subject']  ? array_merge(array('subject' => $temp['subject']), $temp['message']) : $temp['message']);
 					$email 		= ($temp['email']    ? $temp['email']    : null);
-					$nickname 	= ($temp['nickname'] ? $temp['nickname'] : null);				
+					$nickname 	= ($temp['nickname'] ? $temp['nickname'] : null);
 					$skip       = ($temp['skip']     ? true              : $skip);
 					$reg        = ($temp['reg']      ? true              : $reg);
 					$prev_key 	= $prev_key_original;
 				}
 			} unset($key, $value);
 		}
-		
+
 		foreach ($skip_message_post as $v) {
 			if (isset($_POST[$v])) {
 				$message = null;
 				break;
 			}
 		} unset($v);
-		
+
 		//If top iteration, returns compiled name field. Example: "Nickname Firtsname Lastname".
 		if($prev_key === ''){
 			if(!empty($nickname)){
@@ -462,25 +476,25 @@ class CleantalkValidate {
 			'message'  => $message,
 			'skip' 	   => $skip,
 			'reg'      => $reg,
-		);	
+		);
 		return $return_param;
 	}
 	static private function apbct_die($comment, $registration = false, $additional_text = null){
 		// AJAX
 		if(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest'){
 			die(json_encode(array('apbct' => array('blocked' => true, 'comment' => $comment,))));
-			
+
 		// File exists?
 		}elseif(file_exists( __DIR__.'/lib/die_page.html')){
 			$die_page = file_get_contents(__DIR__. '/lib/die_page.html');
-		
+
 		// Default
 		}else{
 			die($comment);
 		}
-		
+
 		$die_page = str_replace('{BLOCK_REASON}', $comment, $die_page);
-		
+
 		// Headers
 		if(headers_sent() === false){
 			header("Cache-Control: no-store, no-cache, must-revalidate");
@@ -492,7 +506,7 @@ class CleantalkValidate {
 		}else{
 			$die_page = str_replace('{GENERATED}', "<h2 class='second'>The page was generated at&nbsp;".date("D, d M Y H:i:s")."</h2>",$die_page);
 		}
-		
+
 		die($die_page);
 	}
 }

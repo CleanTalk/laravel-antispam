@@ -9,7 +9,7 @@ function ctSetCookie(c_name, value) {
 }
 
 var ctStart = function(){
-	ctSetCookie("apbct_checkjs", apbct_checkjs_val);
+	ctSetCookie("apbct_checkjs", ctPublic.apbct_checkjs_val);
 	ctSetCookie("apbct_timezone", ct_date.getTimezoneOffset()/60*(-1));
 	ctSetCookie("apbct_ps_timestamp", Math.floor(new Date().getTime()/1000));
 	ctSetCookie("apbct_visible_fields", 0);

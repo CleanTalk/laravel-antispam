@@ -11,14 +11,12 @@
     "license": "GPL-3.0",
     "authors": [
         {
-            "name": "davydovct",
-            "email": "davydovct@cleantalk.org"
+            "name": "CleanTalk Developers Team",
+            "email": "plugins@cleantalk.org"
         }
     ],
     "minimum-stability": "dev",
-    "require": {
-        "php": "^5.4"
-    },
+
     "autoload": {
         "psr-4": {
             "cleantalk\\antispam\\":"src/"
