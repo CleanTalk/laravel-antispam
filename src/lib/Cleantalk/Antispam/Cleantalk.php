@@ -1,6 +1,6 @@
 <?php
 
-namespace cleantalk\antispam\lib\Cleantalk\antispam;
+namespace cleantalk\antispam\lib\Cleantalk\Antispam;
 
 use cleantalk\antispam\lib\Cleantalk\Common\Helper;
 

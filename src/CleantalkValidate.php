@@ -1,8 +1,8 @@
 <?php
 namespace cleantalk\antispam;
 
-use cleantalk\antispam\lib\Cleantalk\antispam\Cleantalk;
-use cleantalk\antispam\lib\Cleantalk\antispam\CleantalkRequest;
+use cleantalk\antispam\lib\Cleantalk\Antispam\Cleantalk;
+use cleantalk\antispam\lib\Cleantalk\Antispam\CleantalkRequest;
 
 class CleantalkValidate
 {
