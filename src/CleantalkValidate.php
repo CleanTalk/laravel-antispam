@@ -39,8 +39,8 @@ class CleantalkValidate
 		// Skip check if
 		if(
 		    $skip || // Skip flag set by apbct_get_fields_any()
-			( ! $sender_email && ! $general_postdata_test ) || // No email detected and general post data test is disabled
-			( $registration && ! $registrations_test )
+			! $sender_email ||
+			$registration
 		)
 			$skip = true;
 
