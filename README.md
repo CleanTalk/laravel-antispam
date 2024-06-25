@@ -19,6 +19,7 @@
 7) So finally add the middleware to the required routes: `->middleware('cleantalk_antispam')` ![Using middleware](https://raw.githubusercontent.com/CleanTalk/laravel-antispam/master/documentation/screenshots/5.png)
 
 Now you can test the protection on the route contains `cleantalk_antispam` middleware, just use s@cleantalk.org test email for email field.
+
 If no requests are intercepted after configuration, add `\cleantalk\antispam\CleantalkValidate::class` to the `$middleware` variable.
 
 ## Requirements:
