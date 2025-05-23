@@ -15,16 +15,6 @@
             "email": "plugins@cleantalk.org"
         }
     ],
-    "require": {
-        "cleantalk/apbct-installer": "*",
-        "cleantalk/http": "*",
-        "cleantalk/helper": "*"
-    },
-    "config": {
-        "allow-plugins": {
-            "cleantalk/apbct-installer": true
-        }
-    },
     "minimum-stability": "dev",
 
     "autoload": {
