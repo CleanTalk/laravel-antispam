@@ -53,7 +53,7 @@ class CleantalkAntispam
     /**
      * @var CleantalkVerdict Verdict object to store the result of the CleanTalk check
      */
-    private $verdict;
+    public $verdict;
 
     /**
      * @var array Suggestions for improving the data quality

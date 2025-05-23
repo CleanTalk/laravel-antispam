@@ -35,14 +35,31 @@ Additional anti-spam features:
 7) Add the middleware to your routes which requires the anti-spam protection (usually form hanled route)
 
 ## Details
-1) Open the terminal in the root of your laravel application and run command to require anti-spam module: `composer require cleantalk/laravel-antispam`
-2) Edit `config/app.php` file, add new service provider to the `providers` array: `cleantalk\antispam\CleantalkServiceProvider::class` ![Adding service provider](https://raw.githubusercontent.com/CleanTalk/laravel-antispam/master/documentation/screenshots/1.png)
-3) Edit `app/Http/Kernel.php` file, add new middleware to the `$routeMiddleware` array: `'cleantalk_antispam' => \cleantalk\antispam\CleantalkValidate::class` ![Adding middleware](https://raw.githubusercontent.com/CleanTalk/laravel-antispam/master/documentation/screenshots/2.png)
-4) Open the terminal in the root of your laravel application and run command to generate config file and javascript asset: `php artisan vendor:publish`
-5) Edit newly added configuration file `config/cleantalk.php`, type your access key and change `enabled` key to `true` ![Changing configuration](https://raw.githubusercontent.com/CleanTalk/laravel-antispam/master/documentation/screenshots/3.png)
-6) Include cleantalk blade template to your root blade template into <head> block: `@include('cleantalk::cleantalk')` ![Adding blade template](https://raw.githubusercontent.com/CleanTalk/laravel-antispam/master/documentation/screenshots/4.png)
-7) So finally add the middleware to the required routes: `->middleware('cleantalk_antispam')` ![Using middleware](https://raw.githubusercontent.com/CleanTalk/laravel-antispam/master/documentation/screenshots/5.png)
+1) Open the terminal in the root of your laravel application and run command to require anti-spam module: 
+```bash
+composer require cleantalk/laravel-antispam`
+```
+
+2) Edit `config/app.php` file, add new service provider to the `providers` array: 
+```php
+CleanTalkLaravel\CleantalkServiceProvider::class
+```
+3) Edit `app/Http/Kernel.php` file, add new middleware to the `$routeMiddleware` array: `
+```php
+'cleantalk_antispam' => \cleantalk\antispam\CleantalkValidate::class
+```
+4) Open the terminal in the root of your laravel application and run command to generate config file and javascript asset:
+```php
+php artisan vendor:publish
+```
+5) Edit newly added configuration file `config/cleantalk.php`, type your access key and change `enabled` key to `true`
+6) Include cleantalk blade template to your root blade template into <head> block:
+```php
+@include('cleantalk::cleantalk')
+```
+7) So finally add the middleware to the required routes:
+```php
+->middleware('cleantalk_antispam')
+```
 
 Now you can test the protection on the route contains `cleantalk_antispam` middleware, just use s@cleantalk.org test email for email field.
-
-If no requests are intercepted after configuration, add `\cleantalk\antispam\CleantalkValidate::class` to the `$middleware` variable.

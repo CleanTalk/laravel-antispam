@@ -26,7 +26,9 @@ class CleantalkValidate
 		}
 
 		$cleanTalkCheck = new CleanTalkAntispam(config('cleantalk.apikey'));
-		$verdict = $cleanTalkCheck->getVerdict();
+        $cleanTalkCheck->setCustomFormDataContainer($data);
+        $cleanTalkCheck->handle();
+		$verdict = $cleanTalkCheck->verdict;
 		if (!$verdict->allow) {
 			abort(403, $verdict->comment);
 
