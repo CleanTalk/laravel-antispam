@@ -1,6 +1,6 @@
 <?php
 
-namespace cleantalk\antispam;
+namespace CleanTalk;
 
 use Illuminate\Support\ServiceProvider;
 
