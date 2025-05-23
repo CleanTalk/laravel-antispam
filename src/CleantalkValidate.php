@@ -1,6 +1,6 @@
 <?php
 
-namespace CleanTalk;
+namespace CleanTalkLaravel;
 
 use CleanTalk\CleantalkAntispam;
 

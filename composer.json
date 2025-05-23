@@ -19,7 +19,8 @@
 
     "autoload": {
         "psr-4": {
-            "CleanTalk\\":"src/"
+            "CleanTalkLaravel\\": "src/",
+            "CleanTalk\\": "src/lib/"
         }
     }
 }
