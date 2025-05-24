@@ -42,11 +42,21 @@ composer require cleantalk/laravel-antispam`
 
 2) Edit `config/app.php` file, add new service provider to the `providers` array: 
 ```php
-CleanTalkLaravel\CleantalkServiceProvider::class
+\CleanTalkLaravel\CleantalkServiceProvider::class
+```
+For laravel 11 and 12 edit file bootstrap/providers.php, add to returned array 
+```php
+\CleanTalkLaravel\CleantalkServiceProvider::class
 ```
 3) Edit `app/Http/Kernel.php` file, add new middleware to the `$routeMiddleware` array: `
 ```php
-'cleantalk_antispam' => \cleantalk\antispam\CleantalkValidate::class
+'cleantalk_antispam' => \CleanTalkLaravel\CleantalkValidate::class
+```
+For laravel 11 and 12 edit file bootstrap/app.php, add to ->withMiddleware method 
+```php
+$middleware->alias([
+    'cleantalk_antispam' => \CleanTalkLaravel\CleantalkValidate::class
+]);
 ```
 4) Open the terminal in the root of your laravel application and run command to generate config file and javascript asset:
 ```php
