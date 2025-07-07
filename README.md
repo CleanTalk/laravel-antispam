@@ -48,7 +48,7 @@ For laravel 11 and 12 edit file bootstrap/providers.php, add to returned array
 ```php
 \CleanTalkLaravel\CleantalkServiceProvider::class
 ```
-3) Edit `app/Http/Kernel.php` file, add new middleware to the `$routeMiddleware` array: `
+3) Edit `app/Http/Kernel.php` file, add new middleware to the `$routeMiddleware` array:
 ```php
 'cleantalk_antispam' => \CleanTalkLaravel\CleantalkValidate::class
 ```
