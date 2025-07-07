@@ -1,6 +1,6 @@
 <?php
 
-namespace cleantalk\antispam;
+namespace CleanTalkLaravel;
 
 use Illuminate\Support\ServiceProvider;
 
@@ -26,11 +26,9 @@ class CleantalkServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //
         require_once __DIR__.'/lib/cleantalk.php';
         $this->publishes([
             __DIR__.'/config/cleantalk.php' => config_path('cleantalk.php'),
-            __DIR__.'/js' => public_path('vendor/cleantalk'),
         ]);
         $this->loadViewsFrom(__DIR__.'/views/widgets', 'cleantalk');
     }
