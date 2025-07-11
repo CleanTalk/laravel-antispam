@@ -1,6 +1,9 @@
-# Laravel Spam Protection Without CAPTCHA/reCAPTCHA by CleanTalk
+## Laravel Spam Protection for Forms — reCAPTCHA Alternative
 
-Laravel library for cleantalk.org anti-spam service. Invisible spam protection without CAPTCHA, reCAPTCHA, puzzles, math or any annoying tasks.
+CleanTalk is a powerful Laravel anti-spam solution for contact, registration, and comment forms. It offers invisible spam protection — no CAPTCHA, no reCAPTCHA, no user friction.
+
+Unlike traditional CAPTCHA tools, CleanTalk silently filters spam in the background using behavioral analysis and real-time checks. It’s a drop-in replacement for CAPTCHA, built for Laravel developers who care about UX and clean code.
+
 
 ## How does CleanTalk stop spam?
 CleanTalk anti-spam service provides automatic and invisible protection for websites by analyzing visitor behavior and evaluating form submissions.
