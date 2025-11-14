@@ -40,7 +40,7 @@ Additional anti-spam features:
 ## Details
 1) Open the terminal in the root of your laravel application and run command to require anti-spam module: 
 ```bash
-composer require cleantalk/laravel-antispam`
+composer require cleantalk/laravel-antispam
 ```
 
 2) Edit `config/app.php` file, add new service provider to the `providers` array: 
