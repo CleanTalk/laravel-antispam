@@ -24,12 +24,12 @@ Additional anti-spam features:
 * Disposable/temporary email blocking: Prevent registrations and form submissions from disposable email addresses commonly used by spammers.
 * Real-time Email Verification: Automatically verify email addresses in real time, ensuring that submissions and signups are made from legitimate and existing email accounts.
 
-## Requirements
-* CleanTalk account https://cleantalk.org/register?product=anti-spam
-
 ### Websites that trust CleanTalk!
 
 ![CleanTalk Anti-Spam Rating](https://cleantalk.org/webpack/img/cleantalk_rating.png)
+
+## Requirements
+* CleanTalk account https://cleantalk.org/register?product=anti-spam
 
 
 ## How to use
