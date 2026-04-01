@@ -19,6 +19,10 @@ class CleantalkAntispam
      */
     private $access_key;
     /**
+     * @var int|string|null Bot detector / event_token_enabled flag for CleanTalk API (e.g. 1)
+     */
+    private $event_token_enabled;
+    /**
      * @var string Event token for CleanTalk API
      */
     private $event_token;
@@ -178,6 +182,9 @@ class CleantalkAntispam
                 )
             ),
         );
+        if (isset($this->event_token_enabled)) {
+            $data['event_token_enabled'] = $this->event_token_enabled;
+        }
         return @json_encode($data);
     }
 
@@ -337,6 +344,20 @@ class CleantalkAntispam
     {
         $this->fluidCallStack(__FUNCTION__);
         $this->block_no_js_visitor = true;
+        return $this;
+    }
+
+    /**
+     * Set whether the bot detector (event token) integration is enabled on the site.
+     * Sends event_token_enabled to the API when set (typically 1).
+     *
+     * @param int|string|null $event_token_enabled Use 1 when the bot-detector script is used; null to omit
+     * @return $this
+     */
+    public function setEventTokenEnabled($event_token_enabled = null)
+    {
+        $this->fluidCallStack(__FUNCTION__);
+        $this->event_token_enabled = $event_token_enabled;
         return $this;
     }
 

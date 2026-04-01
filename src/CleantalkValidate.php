@@ -27,6 +27,9 @@ class CleantalkValidate
 
 		$cleanTalkCheck = new CleanTalkAntispam(config('cleantalk.apikey'));
         $cleanTalkCheck->setCustomFormDataContainer($data);
+        if (config('cleantalk.event_token_enabled', true)) {
+            $cleanTalkCheck->setEventTokenEnabled(1);
+        }
         $cleanTalkCheck->handle();
 		$verdict = $cleanTalkCheck->verdict;
 		if (!$verdict->allow) {
