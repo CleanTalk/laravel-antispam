@@ -4,6 +4,7 @@ CleanTalk is a powerful Laravel anti-spam solution for contact, registration, an
 
 Unlike traditional CAPTCHA tools, CleanTalk silently filters spam in the background using behavioral analysis and real-time checks. It’s a drop-in replacement for CAPTCHA, built for Laravel developers who care about UX and clean code.
 
+If you find this project useful, please consider starring ⭐ it on GitHub — it helps us grow and support development!
 
 ## How does CleanTalk stop spam?
 CleanTalk anti-spam service provides automatic and invisible protection for websites by analyzing visitor behavior and evaluating form submissions.
