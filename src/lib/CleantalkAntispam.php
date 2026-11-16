@@ -175,7 +175,7 @@ class CleantalkAntispam
             'sender_ip' => $this->ip,
             'js_on' => !empty($this->event_token) ? 1 : 0,
             'event_token' => $this->event_token,
-            'agent' => 'laravel-antispam-3.0.1',
+            'agent' => 'laravel-antispam-3.1.0',
             'sender_info' => @json_encode(
                 array(
                     'REFFERRER' => !empty($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '',
