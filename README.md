@@ -30,51 +30,58 @@ Additional anti-spam features:
 ![CleanTalk Anti-Spam Rating](https://cleantalk.org/webpack/img/cleantalk_rating.png)
 
 ## Requirements
+* PHP 5.6 or higher (tested up to PHP 8.5)
+* Laravel 5.0 – 13 (Laravel 5.0 – 5.4 is the only branch that runs on PHP 5.6)
 * CleanTalk account https://cleantalk.org/register?product=anti-spam
 
 
 ## How to use
 1) Require the `cleantalk/laravel-antispam` module
-2) Register the `CleantalkServiceProvider` service provider into your app.php
-3) Register the `cleantalk_antispam` middleware into your  Kernel.php
-4) Load the  publishes by  `php artisan vendor:publish` command
+2) Register the `CleantalkServiceProvider` service provider
+3) Register the `cleantalk_antispam` middleware
+4) Publish the configuration file by `php artisan vendor:publish` command
 5) Edit `config/cleantalk.php` configuration file
-6) Include JS into your root blade template (into head block) `@include('cleantalk::cleantalk')`
-7) Add the middleware to your routes which requires the anti-spam protection (usually form hanled route)
+6) Include the bot-detector script into your root blade template (into head block) `@include('cleantalk::cleantalk')`
+7) Add the middleware to your routes which requires the anti-spam protection (usually form handled route)
 
 ## Details
 1) Open the terminal in the root of your laravel application and run command to require anti-spam module: 
 ```bash
-composer require cleantalk/laravel-antispam`
+composer require cleantalk/laravel-antispam
 ```
 
-2) Edit `config/app.php` file, add new service provider to the `providers` array: 
+2) For Laravel 5.0 – 10 edit `config/app.php` file, add new service provider to the `providers` array: 
 ```php
 \CleanTalkLaravel\CleantalkServiceProvider::class
 ```
-For laravel 11 and 12 edit file bootstrap/providers.php, add to returned array 
+For Laravel 11 and newer edit file `bootstrap/providers.php`, add to returned array 
 ```php
 \CleanTalkLaravel\CleantalkServiceProvider::class
 ```
-3) Edit `app/Http/Kernel.php` file, add new middleware to the `$routeMiddleware` array:
+3) For Laravel 5.0 – 10 edit `app/Http/Kernel.php` file, add new middleware to the `$routeMiddleware` array (`$middlewareAliases` in Laravel 10):
 ```php
 'cleantalk_antispam' => \CleanTalkLaravel\CleantalkValidate::class
 ```
-For laravel 11 and 12 edit file bootstrap/app.php, add to ->withMiddleware method 
+For Laravel 11 and newer edit file `bootstrap/app.php`, add to `->withMiddleware` method 
 ```php
 $middleware->alias([
     'cleantalk_antispam' => \CleanTalkLaravel\CleantalkValidate::class
 ]);
 ```
-4) Open the terminal in the root of your laravel application and run command to generate config file and javascript asset:
+4) Open the terminal in the root of your laravel application and run command to generate config file:
 ```php
-php artisan vendor:publish
+php artisan vendor:publish --provider="CleanTalkLaravel\CleantalkServiceProvider"
 ```
-5) Edit newly added configuration file `config/cleantalk.php`, type your access key and change `enabled` key to `true`
-6) Include cleantalk blade template to your root blade template into <head> block:
+5) Edit newly added configuration file `config/cleantalk.php`:
+   * `apikey` - type your access key;
+   * `enabled` - change to `true`;
+   * `event_token_enabled` - set `true` manually if the bot-detector script is included (step 6). The flag is sent to the CleanTalk cloud as `event_token_enabled=1` to apply bot-detector filters on the cloud side. It does not enable or disable the bot-detector script itself. Default is `false`.
+6) Include cleantalk blade template to your root blade template into `<head>` block:
 ```php
 @include('cleantalk::cleantalk')
 ```
+It loads the CleanTalk bot-detector script, which adds the `ct_bot_detector_event_token` hidden field to the forms on the page. The token is sent to the CleanTalk cloud with the form data and is used to distinguish real visitors from bots.
+
 7) So finally add the middleware to the required routes:
 ```php
 ->middleware('cleantalk_antispam')

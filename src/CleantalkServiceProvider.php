@@ -6,7 +6,6 @@ use Illuminate\Support\ServiceProvider;
 
 class CleantalkServiceProvider extends ServiceProvider
 {
-
     /**
      * Register services.
      *
@@ -14,8 +13,11 @@ class CleantalkServiceProvider extends ServiceProvider
      */
     public function register()
     {
-       $this->mergeConfigFrom(
-            __DIR__.'/config/cleantalk.php','cleantalk'
+        require_once __DIR__ . '/../lib/autoloader.php';
+
+        $this->mergeConfigFrom(
+            __DIR__ . '/config/cleantalk.php',
+            'cleantalk'
         );
     }
 
@@ -26,10 +28,10 @@ class CleantalkServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        require_once __DIR__.'/lib/cleantalk.php';
+        require_once __DIR__ . '/lib/cleantalk.php';
         $this->publishes([
-            __DIR__.'/config/cleantalk.php' => config_path('cleantalk.php'),
+            __DIR__ . '/config/cleantalk.php' => config_path('cleantalk.php'),
         ]);
-        $this->loadViewsFrom(__DIR__.'/views/widgets', 'cleantalk');
+        $this->loadViewsFrom(__DIR__ . '/views/widgets', 'cleantalk');
     }
 }

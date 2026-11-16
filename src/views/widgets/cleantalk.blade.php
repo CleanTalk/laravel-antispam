@@ -1,1 +1,1 @@
-<script src="https://fd.cleantalk.org/ct-bot-detector-wrapper.js"></script>
+<script src="{!! \CleanTalkLaravel\BotDetectorService::getInstance()->getWrapperURL() !!}"></script>

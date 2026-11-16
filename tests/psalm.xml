@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<psalm
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="https://getpsalm.org/schema/config"
+        name="Psalm for CleanTalk Laravel Anti-Spam"
+        errorLevel="3"
+        throwExceptionOnError="0"
+        findUnusedCode="false"
+        ensureArrayStringOffsetsExist="true"
+        ensureArrayIntOffsetsExist="true"
+        allowNamedArgumentCalls="false"
+        hoistConstants="true"
+        phpVersion="5.6"
+        hideExternalErrors="true"
+        xsi:schemaLocation="https://getpsalm.org/schema/config config.xsd"
+        limitMethodComplexity="true"
+>
+    <projectFiles>
+        <directory name="../src"/>
+        <directory name="../lib"/>
+        <ignoreFiles allowMissingFiles="true">
+            <directory name="../src/lib"/>
+            <directory name="../lib/Cleantalk"/>
+            <directory name="../vendor"/>
+        </ignoreFiles>
+    </projectFiles>
+    <issueHandlers>
+        <!-- Laravel helpers are provided by the host application (laravel/framework) -->
+        <UndefinedFunction>
+            <errorLevel type="suppress">
+                <referencedFunction name="config"/>
+                <referencedFunction name="config_path"/>
+                <referencedFunction name="abort"/>
+            </errorLevel>
+        </UndefinedFunction>
+    </issueHandlers>
+</psalm>
